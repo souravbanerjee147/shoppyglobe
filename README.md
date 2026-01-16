@@ -56,6 +56,10 @@ cd shoppyglobe
 2. **Install dependencies**
 ```bash
 npm install
+
+npm install react-router-dom redux react-redux @reduxjs/toolkit
+
+npm install prop-types
 ```
 
 3. **Start the development server**
@@ -64,7 +68,7 @@ npm run dev
 ```
 
 4. **Open your browser**
-Navigate to `http://localhost:5173/`
+Navigate to `http://localhost:5174/`
 
 ### **Build for Production**
 ```bash
