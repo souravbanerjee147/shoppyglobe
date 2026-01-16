@@ -1,35 +1,75 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store/store';
+import Header from './components/Header';
+import CartPersistAlert from './components/CartPersistAlert';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Lazy loading for performance optimization
+const ProductList = lazy(() => import('./components/ProductList'));
+const ProductDetail = lazy(() => import('./components/ProductDetail'));
+const Cart = lazy(() => import('./components/Cart'));
+const Checkout = lazy(() => import('./components/Checkout'));
+const NotFound = lazy(() => import('./components/NotFound'));
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+// Error Boundary component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-boundary">
+          <h2>Something went wrong</h2>
+          <p>Please try refreshing the page</p>
+          <button onClick={() => window.location.reload()}>Refresh Page</button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
-export default App
+function App() {
+  return (
+    <Provider store={store}>
+      <Router>
+        <ErrorBoundary>
+          <div className="App">
+            <CartPersistAlert />
+            <Header />
+            <Suspense fallback={
+              <div className="loading">
+                <div className="spinner"></div>
+                <p>Loading ShoppyGlobe...</p>
+              </div>
+            }>
+              <Routes>
+                <Route path="/" element={<ProductList />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </div>
+        </ErrorBoundary>
+      </Router>
+    </Provider>
+  );
+}
+
+export default App;
