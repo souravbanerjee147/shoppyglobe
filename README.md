@@ -64,7 +64,7 @@ npm run dev
 ```
 
 4. **Open your browser**
-Navigate to `http://localhost:3000`
+Navigate to `http://localhost:5173/`
 
 ### **Build for Production**
 ```bash
